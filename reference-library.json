@@ -1,0 +1,173 @@
+{
+  "assertionTypes": [
+    {
+      "id": "scientific",
+      "label": "Scientific",
+      "definition": "Claims about research findings, experiments, studies, medical outcomes, or scientific mechanisms.",
+      "evidenceDomains": ["scholarly_research", "scientific_agencies", "data_repositories"],
+      "expectedSignals": ["study_name", "journal_name", "doi", "institution_name", "sample_size", "publication_date"],
+      "weakSignals": ["generic_expert_claim", "unsourced_summary", "opinion_language"]
+    },
+    {
+      "id": "policy",
+      "label": "Policy",
+      "definition": "Claims about public policy, agency guidance, administrative action, or government programs.",
+      "evidenceDomains": ["government_records", "legislative_records"],
+      "expectedSignals": ["agency_name", "bill_number", "rule_number", "official_report", "effective_date"],
+      "weakSignals": ["commentary_only", "advocacy_summary", "unsourced_claim"]
+    },
+    {
+      "id": "legal",
+      "label": "Legal",
+      "definition": "Claims about laws, court decisions, legal obligations, or judicial outcomes.",
+      "evidenceDomains": ["legal_records", "government_records"],
+      "expectedSignals": ["case_name", "statute_citation", "regulation_citation", "court_name", "decision_date"],
+      "weakSignals": ["legal_commentary", "blog_summary", "uncited_claim"]
+    },
+    {
+      "id": "corporate",
+      "label": "Corporate",
+      "definition": "Claims about companies, executives, mergers, product announcements, filings, or investor communications.",
+      "evidenceDomains": ["corporate_disclosures", "media_records"],
+      "expectedSignals": ["company_name", "filing_reference", "earnings_report", "executive_name", "announcement_date"],
+      "weakSignals": ["rumor", "anonymous_claim", "marketing_language"]
+    },
+    {
+      "id": "event",
+      "label": "Event",
+      "definition": "Claims that a real-world event happened at a certain time or place.",
+      "evidenceDomains": ["media_records", "government_records", "archival_records"],
+      "expectedSignals": ["event_date", "location", "named_parties", "official_statement", "timestamp"],
+      "weakSignals": ["vague_timing", "anonymous_source", "unclear_location"]
+    },
+    {
+      "id": "historical",
+      "label": "Historical",
+      "definition": "Claims about past events, timelines, primary records, or historical interpretation.",
+      "evidenceDomains": ["archival_records", "library_collections", "scholarly_research"],
+      "expectedSignals": ["date", "archive_reference", "document_title", "historical_actor", "primary_source_reference"],
+      "weakSignals": ["retelling_only", "uncited_summary", "memory_claim"]
+    },
+    {
+      "id": "statistical",
+      "label": "Statistical",
+      "definition": "Claims using numbers, rates, percentages, counts, or measured trends.",
+      "evidenceDomains": ["data_repositories", "government_records", "scholarly_research"],
+      "expectedSignals": ["percentage", "sample_size", "dataset_name", "time_range", "method_reference"],
+      "weakSignals": ["floating_number", "no_source_for_statistic", "no_timeframe"]
+    },
+    {
+      "id": "identity",
+      "label": "Identity",
+      "definition": "Claims about who a person or organization is, affiliation, role, or authorship.",
+      "evidenceDomains": ["institutional_records", "media_records", "library_collections"],
+      "expectedSignals": ["full_name", "organization_name", "role_title", "bio_reference", "official_profile"],
+      "weakSignals": ["nickname_only", "hearsay_identity", "missing_affiliation"]
+    },
+    {
+      "id": "credential",
+      "label": "Credential",
+      "definition": "Claims about qualifications, licenses, certifications, degrees, or training.",
+      "evidenceDomains": ["institutional_records", "government_records", "library_collections"],
+      "expectedSignals": ["license_number", "issuing_body", "degree_name", "certification_name", "credential_date"],
+      "weakSignals": ["self-claimed_expertise", "unclear_institution", "missing_issuer"]
+    },
+    {
+      "id": "media",
+      "label": "Media",
+      "definition": "Claims about media publication, reporting, authorship, broadcast content, or editorial framing.",
+      "evidenceDomains": ["media_records", "library_collections", "archival_records"],
+      "expectedSignals": ["publisher_name", "author_name", "publication_date", "headline", "archive_reference"],
+      "weakSignals": ["reposted_text", "missing_source", "cropped_context"]
+    },
+    {
+      "id": "authenticity",
+      "label": "Authenticity",
+      "definition": "Claims about whether content, images, clips, screenshots, or documents are genuine or altered.",
+      "evidenceDomains": ["media_records", "archival_records", "technical_standards"],
+      "expectedSignals": ["original_source", "timestamp", "metadata", "version_reference", "chain_of_custody"],
+      "weakSignals": ["reupload_only", "missing_origin", "edited_context"]
+    },
+    {
+      "id": "other",
+      "label": "Other",
+      "definition": "Claims that do not fit the current taxonomy cleanly and require human review.",
+      "evidenceDomains": ["human_review"],
+      "expectedSignals": [],
+      "weakSignals": ["unclear_scope", "mixed_claim", "insufficient_context"]
+    }
+  ],
+  "evidenceDomains": [
+    {
+      "id": "scholarly_research",
+      "label": "Scholarly Research",
+      "sourceClasses": ["peer-reviewed journals", "academic books", "research databases", "university publications"]
+    },
+    {
+      "id": "scientific_agencies",
+      "label": "Scientific Agencies",
+      "sourceClasses": ["government scientific agencies", "public health agencies", "official research institutions"]
+    },
+    {
+      "id": "government_records",
+      "label": "Government Records",
+      "sourceClasses": ["agency reports", "official guidance", "public records", "regulatory documents"]
+    },
+    {
+      "id": "legislative_records",
+      "label": "Legislative Records",
+      "sourceClasses": ["bills", "statutes", "legislative analyses", "committee materials"]
+    },
+    {
+      "id": "legal_records",
+      "label": "Legal Records",
+      "sourceClasses": ["court opinions", "case filings", "statutes", "regulations"]
+    },
+    {
+      "id": "corporate_disclosures",
+      "label": "Corporate Disclosures",
+      "sourceClasses": ["company filings", "annual reports", "investor disclosures", "official company statements"]
+    },
+    {
+      "id": "data_repositories",
+      "label": "Data Repositories",
+      "sourceClasses": ["official datasets", "statistical agencies", "registry systems", "public data portals"]
+    },
+    {
+      "id": "archival_records",
+      "label": "Archival Records",
+      "sourceClasses": ["archives", "primary documents", "historical repositories", "curated collections"]
+    },
+    {
+      "id": "library_collections",
+      "label": "Library Collections",
+      "sourceClasses": ["cataloged books", "reference collections", "monographs", "institutional holdings"]
+    },
+    {
+      "id": "institutional_records",
+      "label": "Institutional Records",
+      "sourceClasses": ["official profiles", "credential directories", "institutional biographies", "staff pages"]
+    },
+    {
+      "id": "media_records",
+      "label": "Media Records",
+      "sourceClasses": ["news archives", "publisher records", "broadcast transcripts", "press materials"]
+    },
+    {
+      "id": "technical_standards",
+      "label": "Technical Standards",
+      "sourceClasses": ["standards documents", "protocol specifications", "technical documentation", "engineering guidance"]
+    },
+    {
+      "id": "human_review",
+      "label": "Human Review",
+      "sourceClasses": ["manual review required"]
+    }
+  ],
+  "statusLabels": [
+    "most_detected",
+    "signals_incomplete",
+    "signals_undetected",
+    "needs_human_review"
+  ]
+}
