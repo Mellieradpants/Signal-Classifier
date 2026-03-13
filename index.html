@@ -3,66 +3,476 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Signal Classifier</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Verification Analysis Tool</title>
+  <style>
+    :root {
+      --bg: #f4f6f8;
+      --panel: #ffffff;
+      --text: #1f2933;
+      --muted: #52606d;
+      --border: #d9e2ec;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 48px;
+    }
+
+    .header {
+      margin-bottom: 24px;
+    }
+
+    .header h1 {
+      margin: 0 0 8px;
+      font-size: 2rem;
+    }
+
+    .header p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 760px;
+    }
+
+    .stack-line {
+      margin-top: 14px;
+      font-size: 0.98rem;
+      color: var(--muted);
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 1.15rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 220px;
+      resize: vertical;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font: inherit;
+      color: var(--text);
+      background: #fff;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 16px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .secondary {
+      background: #e5e7eb;
+      color: var(--text);
+    }
+
+    .secondary:hover {
+      background: #d1d5db;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .result-box {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      min-height: 160px;
+    }
+
+    .result-box h3 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+    }
+
+    .result-box p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .result-box ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .result-box li + li {
+      margin-top: 6px;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    .empty-state {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    @media (max-width: 800px) {
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
-  <main class="app">
-    <section class="card">
-      <h1>Signal Classifier</h1>
-      <p class="subtitle">
-        Analyze pasted text to identify assertion type, detected evidence signals, missing signals, and recommended evidence domains.
+  <main class="page">
+    <section class="header">
+      <h1>Verification Analysis Tool</h1>
+      <p>
+        This tool looks at a piece of text, pulls out the claims being made, and shows
+        where someone would normally go to check them. It does not decide what is true
+        or false.
       </p>
+      <div class="stack-line">
+        Origin → Source context &nbsp; | &nbsp; Language → Claim structure &nbsp; | &nbsp; Verification → Evidence pathway
+      </div>
+    </section>
 
-      <label for="inputText">Paste text</label>
-      <textarea
-        id="inputText"
-        placeholder="Paste a headline, post, quote, article snippet, or statement here..."
-      ></textarea>
+    <section class="panel">
+      <h2>Input</h2>
+      <label for="inputText">Paste Claim or Text</label>
+      <textarea id="inputText" placeholder="Paste an article excerpt, social post, statement, or claim here..."></textarea>
 
-      <button id="analyzeBtn">Analyze Signal</button>
+      <div class="button-row">
+        <button class="primary" id="analyzeBtn">Analyze</button>
+        <button class="secondary" id="clearBtn">Clear</button>
+      </div>
+    </section>
 
-      <section id="results" class="results hidden">
-        <h2>Analysis Result</h2>
+    <section class="results-grid">
+      <div class="result-box full">
+        <h3>Plain Meaning</h3>
+        <div id="plainMeaning" class="empty-state">No analysis yet.</div>
+      </div>
 
-        <div class="result-block">
-          <span class="result-label">Classification</span>
-          <div id="classification">—</div>
-        </div>
+      <div class="result-box">
+        <h3>Claims Identified</h3>
+        <div id="claims" class="empty-state">No claims identified yet.</div>
+      </div>
 
-        <div class="result-block">
-          <span class="result-label">Evidence Domains</span>
-          <div id="evidenceDomains">—</div>
-        </div>
+      <div class="result-box">
+        <h3>Claim Type</h3>
+        <div id="claimType" class="empty-state">No claim type yet.</div>
+      </div>
 
-        <div class="result-block">
-          <span class="result-label">Expected Signals</span>
-          <div id="expectedSignals">—</div>
-        </div>
+      <div class="result-box">
+        <h3>Verification Path</h3>
+        <div id="verificationPath" class="empty-state">No verification path yet.</div>
+      </div>
 
-        <div class="result-block">
-          <span class="result-label">Detected Signals</span>
-          <div id="detectedSignals">—</div>
-        </div>
+      <div class="result-box">
+        <h3>Primary Sources to Check</h3>
+        <div id="sources" class="empty-state">No sources listed yet.</div>
+      </div>
 
-        <div class="result-block">
-          <span class="result-label">Missing Signals</span>
-          <div id="missingSignals">—</div>
-        </div>
+      <div class="result-box">
+        <h3>Visible Gaps</h3>
+        <div id="gaps" class="empty-state">No gaps listed yet.</div>
+      </div>
 
-        <div class="result-block">
-          <span class="result-label">Status</span>
-          <div id="status">—</div>
-        </div>
-
-        <div class="result-block">
-          <span class="result-label">Review Reason</span>
-          <div id="reviewReason">—</div>
-        </div>
-      </section>
+      <div class="result-box full">
+        <h3>Human Review</h3>
+        <div id="humanReview" class="empty-state">No review note yet.</div>
+      </div>
     </section>
   </main>
 
-  <script src="script.js"></script>
+  <script>
+    const inputText = document.getElementById("inputText");
+    const analyzeBtn = document.getElementById("analyzeBtn");
+    const clearBtn = document.getElementById("clearBtn");
+
+    const plainMeaning = document.getElementById("plainMeaning");
+    const claims = document.getElementById("claims");
+    const claimType = document.getElementById("claimType");
+    const verificationPath = document.getElementById("verificationPath");
+    const sources = document.getElementById("sources");
+    const gaps = document.getElementById("gaps");
+    const humanReview = document.getElementById("humanReview");
+
+    const sourceMap = {
+      "scientific claim": {
+        path: [
+          "Research literature",
+          "Academic databases",
+          "Institutional publications"
+        ],
+        sources: [
+          "Peer-reviewed journals",
+          "University or research institute publications",
+          "PubMed, Google Scholar, Crossref"
+        ]
+      },
+      "policy or legal claim": {
+        path: [
+          "Government records",
+          "Legislation",
+          "Agency documents",
+          "Court materials"
+        ],
+        sources: [
+          ".gov publications",
+          "Bill text and legislative records",
+          "Agency guidance",
+          "Court filings or opinions"
+        ]
+      },
+      "corporate claim": {
+        path: [
+          "Company records",
+          "Official statements",
+          "Regulatory filings"
+        ],
+        sources: [
+          "Company website",
+          "Press releases",
+          "Investor relations pages",
+          "SEC filings"
+        ]
+      },
+      "event claim": {
+        path: [
+          "Direct records",
+          "Official statements",
+          "Independent reporting"
+        ],
+        sources: [
+          "Official event pages",
+          "Transcripts or video",
+          "Multiple news reports"
+        ]
+      },
+      "historical claim": {
+        path: [
+          "Archives",
+          "Primary documents",
+          "Historical reference sources"
+        ],
+        sources: [
+          "Archive collections",
+          "Library records",
+          "Museum or institutional archives",
+          "History publications"
+        ]
+      },
+      "statistical claim": {
+        path: [
+          "Dataset source",
+          "Methodology documents",
+          "Primary publication"
+        ],
+        sources: [
+          "Official datasets",
+          "Methodology notes",
+          "Statistical agency publications",
+          "Research reports"
+        ]
+      },
+      "product or capability claim": {
+        path: [
+          "Technical documentation",
+          "Product pages",
+          "Demonstrations",
+          "Regulatory records when relevant"
+        ],
+        sources: [
+          "Official product documentation",
+          "Release notes",
+          "Demo materials",
+          "Third-party reporting"
+        ]
+      },
+      "general claim": {
+        path: [
+          "Named source records",
+          "Direct documentation",
+          "Independent reporting"
+        ],
+        sources: [
+          "Official pages tied to named entities",
+          "Source documents",
+          "Multiple independent reports"
+        ]
+      }
+    };
+
+    function splitClaims(text) {
+      return text
+        .split(/(?<=[.!?])\s+/)
+        .map(s => s.trim())
+        .filter(Boolean)
+        .filter(s => s.length > 20);
+    }
+
+    function detectClaimType(text) {
+      const lower = text.toLowerCase();
+
+      if (/\b(study|research|scientists|clinical|evidence|experiment|peer-reviewed)\b/.test(lower)) {
+        return "scientific claim";
+      }
+      if (/\b(law|bill|court|agency|policy|legal|regulation|senate|house|governor)\b/.test(lower)) {
+        return "policy or legal claim";
+      }
+      if (/\b(company|ceo|announced|launched|product|brand|openai|google|microsoft|meta)\b/.test(lower)) {
+        return "corporate claim";
+      }
+      if (/\b(happened|occurred|said at|event|conference|meeting|speech|rally)\b/.test(lower)) {
+        return "event claim";
+      }
+      if (/\b(history|historical|century|archived|in 19\d{2}|in 20\d{2})\b/.test(lower)) {
+        return "historical claim";
+      }
+      if (/\b(percent|percentage|survey|poll|rate|average|data|dataset|statistics|number of)\b/.test(lower)) {
+        return "statistical claim";
+      }
+      if (/\b(can|cannot|able to|capable|feature|tool|model|software|app)\b/.test(lower)) {
+        return "product or capability claim";
+      }
+
+      return "general claim";
+    }
+
+    function detectGaps(text) {
+      const found = [];
+      const lower = text.toLowerCase();
+
+      if (!/\b(http|www\.|according to|source|study|report|filing|document)\b/.test(lower)) {
+        found.push("No primary source cited");
+      }
+      if (!/\b(19\d{2}|20\d{2}|january|february|march|april|may|june|july|august|september|october|november|december|today|yesterday)\b/.test(lower)) {
+        found.push("No timeframe provided");
+      }
+      if (!/\b(by|from|agency|company|court|researchers|officials|department|committee)\b/.test(lower)) {
+        found.push("No clearly identified actor");
+      }
+      if (!/\b(because|due to|through|using|based on|caused by|works by)\b/.test(lower)) {
+        found.push("No mechanism described");
+      }
+      if (!/\b(confirm|verified|documented|recorded|published|reported by)\b/.test(lower)) {
+        found.push("No independent confirmation visible");
+      }
+
+      return found.length ? found : ["No obvious structural gaps detected from the text alone"];
+    }
+
+    function renderList(target, items) {
+      if (!items || items.length === 0) {
+        target.innerHTML = '<div class="empty-state">None.</div>';
+        return;
+      }
+
+      const ul = document.createElement("ul");
+      items.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        ul.appendChild(li);
+      });
+
+      target.innerHTML = "";
+      target.appendChild(ul);
+    }
+
+    analyzeBtn.addEventListener("click", () => {
+      const text = inputText.value.trim();
+
+      if (!text) {
+        alert("Paste text into the box first.");
+        return;
+      }
+
+      const extractedClaims = splitClaims(text).slice(0, 5);
+      const primaryType = detectClaimType(text);
+      const mapEntry = sourceMap[primaryType] || sourceMap["general claim"];
+      const foundGaps = detectGaps(text);
+
+      plainMeaning.textContent =
+        "This text appears to make one or more claims that can be separated, classified, and checked against the kinds of sources where supporting evidence would normally appear.";
+
+      renderList(
+        claims,
+        extractedClaims.length ? extractedClaims : ["No clear standalone claims detected"]
+      );
+
+      claimType.innerHTML = `<p>${primaryType}</p>`;
+      renderList(verificationPath, mapEntry.path);
+      renderList(sources, mapEntry.sources);
+      renderList(gaps, foundGaps);
+
+      humanReview.innerHTML = `
+        <p>
+          Human review is recommended when the text includes multiple claim types,
+          vague wording, missing dates, missing named actors, or requires outside checking
+          to confirm what the text is referring to.
+        </p>
+      `;
+    });
+
+    clearBtn.addEventListener("click", () => {
+      inputText.value = "";
+
+      plainMeaning.innerHTML = '<div class="empty-state">No analysis yet.</div>';
+      claims.innerHTML = '<div class="empty-state">No claims identified yet.</div>';
+      claimType.innerHTML = '<div class="empty-state">No claim type yet.</div>';
+      verificationPath.innerHTML = '<div class="empty-state">No verification path yet.</div>';
+      sources.innerHTML = '<div class="empty-state">No sources listed yet.</div>';
+      gaps.innerHTML = '<div class="empty-state">No gaps listed yet.</div>';
+      humanReview.innerHTML = '<div class="empty-state">No review note yet.</div>';
+    });
+  </script>
 </body>
 </html>
+     
+        
