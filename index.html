@@ -1,1 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Signal Classifier</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+    <section class="card">
+      <h1>Signal Classifier</h1>
+      <p class="subtitle">
+        Analyze pasted text to identify assertion type, detected evidence signals, missing signals, and recommended evidence domains.
+      </p>
 
+      <label for="inputText">Paste text</label>
+      <textarea
+        id="inputText"
+        placeholder="Paste a headline, post, quote, article snippet, or statement here..."
+      ></textarea>
+
+      <button id="analyzeBtn">Analyze Signal</button>
+
+      <section id="results" class="results hidden">
+        <h2>Analysis Result</h2>
+
+        <div class="result-block">
+          <span class="result-label">Classification</span>
+          <div id="classification">—</div>
+        </div>
+
+        <div class="result-block">
+          <span class="result-label">Evidence Domains</span>
+          <div id="evidenceDomains">—</div>
+        </div>
+
+        <div class="result-block">
+          <span class="result-label">Expected Signals</span>
+          <div id="expectedSignals">—</div>
+        </div>
+
+        <div class="result-block">
+          <span class="result-label">Detected Signals</span>
+          <div id="detectedSignals">—</div>
+        </div>
+
+        <div class="result-block">
+          <span class="result-label">Missing Signals</span>
+          <div id="missingSignals">—</div>
+        </div>
+
+        <div class="result-block">
+          <span class="result-label">Status</span>
+          <div id="status">—</div>
+        </div>
+
+        <div class="result-block">
+          <span class="result-label">Review Reason</span>
+          <div id="reviewReason">—</div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
